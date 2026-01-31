@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>忍術性質変化バトル Ver.52</title>
+<title>忍術性質変化バトル Ver.53</title>
 <link href="https://fonts.googleapis.com/css2?family=Reggae+One&display=swap" rel="stylesheet">
 <style>
     :root { --p1-color: #ff4500; --p2-color: #00bfff; --gold: #ffd700; --silver: #c0c0c0; --dark-bg: #050505; }
@@ -31,14 +31,10 @@
     .main-btn { width: 260px; padding: 18px; font-size: 1.4rem; color: #000; background: var(--gold); border: none; border-radius: 50px; cursor: pointer; font-family: 'Reggae One'; margin-bottom: 20px; box-shadow: 0 0 20px rgba(255,215,0,0.5); }
     .sub-btn { width: 200px; padding: 10px; font-size: 1rem; color: #ddd; background: rgba(255,255,255,0.1); border: 1px solid #666; border-radius: 30px; cursor: pointer; font-family: 'Reggae One'; margin-bottom: 10px; }
 
-    /* --- 任務選択画面 --- */
+    /* 任務選択 */
     #quest-select-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3500; display: none; flex-direction: column; align-items: center; padding-top: 40px; }
     .quest-list { width: 95%; max-width: 450px; height: 70%; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; border-top: 1px solid #444; border-bottom: 1px solid #444; margin-bottom: 20px; }
-    
-    .quest-card { 
-        background: #222; border: 1px solid #444; border-radius: 8px; padding: 12px; 
-        display: flex; align-items: center; cursor: pointer; transition: 0.2s; position: relative;
-    }
+    .quest-card { background: #222; border: 1px solid #444; border-radius: 8px; padding: 12px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; position: relative; }
     .quest-card.locked { opacity: 0.4; pointer-events: none; filter: grayscale(1); }
     .quest-card:hover { border-color: var(--gold); background: #333; }
     .quest-rank { font-size: 1.2rem; font-weight: bold; width: 40px; text-align: center; margin-right: 10px; border-right: 1px solid #555; }
@@ -47,15 +43,12 @@
     .quest-enemy { font-size: 0.8rem; color: var(--gold); }
     .quest-badge { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #4caf50; font-size: 0.8rem; border: 1px solid #444; padding: 2px 5px; border-radius: 4px; display: none; }
     .quest-card.cleared .quest-badge { display: block; }
-
-    /* ランク色 */
     .rank-D { color: #888; } .rank-C { color: #4caf50; } .rank-B { color: #00bfff; } .rank-A { color: #ff4500; } .rank-S { color: var(--gold); text-shadow: 0 0 5px var(--gold); }
 
-    /* --- 任務ブリーフィング (ルール選択) --- */
+    /* ブリーフィング */
     #briefing-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3600; display: none; flex-direction: column; align-items: center; justify-content: center; }
     .briefing-box { width: 90%; max-width: 400px; background: #111; border: 2px solid var(--gold); border-radius: 10px; padding: 20px; text-align: center; }
     .briefing-title { font-size: 1.5rem; color: var(--gold); margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 10px; }
-    .briefing-target { font-size: 1.2rem; margin-bottom: 30px; }
     .rule-btns { display: flex; gap: 10px; justify-content: center; }
     .rule-btn { flex: 1; padding: 15px; border: 1px solid #555; background: #222; color: #fff; border-radius: 5px; cursor: pointer; transition: 0.2s; font-family: 'Reggae One'; }
     .rule-btn:hover { border-color: var(--gold); background: #333; }
@@ -71,14 +64,52 @@
     #p2-area { transform: rotate(180deg); }
     .hand { display: flex; justify-content: center; gap: 5px; min-height: 110px; width: 100%; align-items: flex-end; perspective: 1000px; }
     
-    .card { width: 68px; height: 98px; border-radius: 6px; background: #222; border: 2px solid #555; position: relative; transition: 0.2s; }
-    .card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
-    .card-label { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.7); font-size: 11px; }
-    .card.selected { transform: translateY(-25px) scale(1.1); border-color: var(--gold); box-shadow: 0 0 15px var(--gold); z-index: 100; }
+    /* --- カードデザイン修正版 --- */
+    .card { 
+        width: 68px; height: 98px; border-radius: 6px; 
+        background: #222; /* デフォルト背景は黒 */
+        border: 2px solid #555; position: relative; transition: 0.2s; 
+        overflow: hidden;
+    }
+    .card-inner { width: 100%; height: 100%; position: relative; z-index: 1; }
+    /* 画像を前面に出し、余計な色を混ぜない */
+    .card img { 
+        width: 100%; height: 100%; object-fit: cover; opacity: 1; 
+        display: block; position: relative; z-index: 1;
+    }
+    .card-label { 
+        position: absolute; bottom: 0; width: 100%; 
+        background: rgba(0,0,0,0.7); font-size: 11px; z-index: 5;
+    }
+    .card.selected { 
+        transform: translateY(-25px) scale(1.1); border-color: var(--gold); 
+        box-shadow: 0 0 15px var(--gold); z-index: 100; 
+    }
     
-    .card.rank-silver { border-color: #c0c0c0; box-shadow: 0 0 10px rgba(192,192,192,0.5); }
-    .card.rank-rainbow { border-color: #fff; animation: rainbow-border 2s linear infinite; box-shadow: 0 0 15px rgba(255,255,255,0.5); }
-    @keyframes rainbow-border { 0%{border-color:red;} 50%{border-color:cyan;} 100%{border-color:magenta;} }
+    /* --- レアリティ演出の修正（薄く重ねる） --- */
+    /* シルバー: 薄い白光沢 */
+    .card.rank-silver::after { 
+        content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(135deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 70%);
+        pointer-events: none; z-index: 10;
+        mix-blend-mode: overlay; opacity: 0.8;
+    }
+    .card.rank-silver { border-color: #c0c0c0; }
+
+    /* レインボー: 極めて薄い虹色光沢 */
+    .card.rank-rainbow::after { 
+        content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        /* 透明度を0.15まで下げて画像を見えやすくする */
+        background: linear-gradient(125deg, 
+            rgba(255,0,0,0.15), rgba(255,165,0,0.15), rgba(255,255,0,0.15), 
+            rgba(0,128,0,0.15), rgba(0,0,255,0.15), rgba(75,0,130,0.15), rgba(238,130,238,0.15)); 
+        background-size: 200% 200%; animation: holo-move 3s ease infinite; 
+        mix-blend-mode: overlay; pointer-events: none; z-index: 10;
+    }
+    .card.rank-rainbow { border-color: #fff; animation: rainbow-border 3s linear infinite; box-shadow: 0 0 10px rgba(255,255,255,0.3); }
+    
+    @keyframes holo-move { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    @keyframes rainbow-border { 0%{border-color:red;} 20%{border-color:yellow;} 40%{border-color:lime;} 60%{border-color:cyan;} 80%{border-color:blue;} 100%{border-color:magenta;} }
 
     .decide-btn { width: 140px; height: 45px; background: #a00; border: 2px solid #ffcc00; border-radius: 25px; font-size: 1.2rem; font-family: 'Reggae One'; color: #fff; z-index: 200; pointer-events: auto; }
     #battle-center { z-index: 50; height: 30%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
@@ -133,11 +164,10 @@
 <div id="briefing-modal">
     <div class="briefing-box">
         <div class="briefing-title">任務内容確認</div>
-        <div class="briefing-target" id="briefing-target-text">VS 敵</div>
-        <div style="color:#aaa; font-size:0.9rem; margin-bottom:10px;">作戦（ルール）を選択せよ</div>
+        <div style="font-size:1.2rem; margin-bottom:20px;" id="briefing-target-text">VS 敵</div>
         <div class="rule-btns">
-            <button class="rule-btn" onclick="confirmQuestStart('N')">通常作戦<span class="rule-desc">3戦 / 手札無制限</span></button>
-            <button class="rule-btn" onclick="confirmQuestStart('A')">特別作戦<span class="rule-desc">5戦 / 手札消費</span></button>
+            <button class="rule-btn" onclick="confirmQuestStart('N')">通常作戦<span class="rule-desc">3戦 / 無制限</span></button>
+            <button class="rule-btn" onclick="confirmQuestStart('A')">特別作戦<span class="rule-desc">5戦 / 消費</span></button>
         </div>
         <button class="close-btn" onclick="closeBriefing()" style="margin-top:20px; width:100px; padding:5px;">中止</button>
     </div>
@@ -162,16 +192,13 @@
 
 <div id="anim-layer"></div>
 <div id="result-text"></div>
-
 <div id="p2-area" class="player-area">
-    <div style="color:#aaa; font-size:0.9rem; margin-bottom:5px;" id="enemy-name-disp">CPU</div>
+    <div style="color:#aaa; font-size:0.9rem;" id="enemy-name-disp">CPU</div>
     <div id="p2-hand" class="hand"></div>
     <button id="p2-btn" class="decide-btn" onclick="confirmMove(2)">P2 決定</button>
 </div>
 <div id="battle-center">
-    <div id="score-display">
-        <span style="color:var(--p1-color)">壱: <span id="s1">0</span></span> - <span style="color:var(--p2-color)">弐: <span id="s2">0</span></span>
-    </div>
+    <div id="score-display"><span style="color:var(--p1-color)">壱: <span id="s1">0</span></span> - <span style="color:var(--p2-color)">弐: <span id="s2">0</span></span></div>
     <div id="status-msg" style="color:#aaa;">修行開始</div>
 </div>
 <div id="p1-area" class="player-area">
@@ -180,41 +207,28 @@
 </div>
 
 <button id="history-btn" onclick="showHistory()" style="display:none;">戦歴</button>
-<div id="history-modal">
-    <h2 style="color:var(--gold);">対戦記録</h2>
-    <div id="history-content"></div>
-    <button class="close-btn" onclick="closeHistory()">閉じる</button>
-</div>
+<div id="history-modal"><h2 style="color:var(--gold);">対戦記録</h2><div id="history-content"></div><button class="close-btn" onclick="closeHistory()">閉じる</button></div>
 
 <script>
-// --- データ定義 ---
 const icons = { '火':'https://livedoor.blogimg.jp/pokeruto_narutostorm/imgs/9/d/9df794cc.png', '水':'https://ooyake01.com/wp-content/uploads/2019/07/%E6%89%89%E9%96%93.png', '土':'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgUZKzoGoqlDT7mUC9X8fE76pwS8yTZOsQJWSf0JLyzQ&s', '風':'https://otakotaku.com/asset/img/character/2017/10/uzumaki-naruto-59dbafb3a0d9ep.jpg', '雷':'https://images-na.ssl-images-amazon.com/images/I/71rse6gO0XL._CR550,250,1420,1420_.jpg' };
 const typeOrd={'火':1,'水':2,'土':3,'風':4,'雷':5}, types=['火','水','土','風','雷'];
 const rel={'火':'風','風':'雷','雷':'土','土':'水','水':'火'};
 
-// 30のクエストリスト (AI: 1=Random, 2=Hybrid, 3=Strong)
 const QUESTS = [
-    // Dランク (アカデミー〜下忍)
     { id: 1, rank: 'D', title: 'サバイバル演習', enemy: 'カカシ先生', ai: 1, bg: 'bg-leaf' },
     { id: 2, rank: 'D', title: '脱走忍者捕獲', enemy: 'ミズキ', ai: 1, bg: 'bg-leaf' },
     { id: 3, rank: 'D', title: 'ライバル対決', enemy: 'うちはサスケ(少年)', ai: 1, bg: 'bg-leaf' },
     { id: 4, rank: 'D', title: '孫の挑戦', enemy: '木ノ葉丸', ai: 1, bg: 'bg-leaf' },
     { id: 5, rank: 'D', title: '波の国の鬼', enemy: '桃地再不斬', ai: 1, bg: 'bg-valley' },
     { id: 6, rank: 'D', title: '氷遁使い', enemy: '白', ai: 2, bg: 'bg-valley' },
-    
-    // Cランク (中忍試験予選)
     { id: 7, rank: 'C', title: '死の森の蛇', enemy: '大蛇丸(偽装)', ai: 2, bg: 'bg-leaf' },
     { id: 8, rank: 'C', title: '音忍の襲撃', enemy: 'ドス・キヌタ', ai: 2, bg: 'bg-leaf' },
     { id: 9, rank: 'C', title: '柔拳使い', enemy: '日向ネジ', ai: 2, bg: 'bg-normal' },
     { id: 10, rank: 'C', title: '砂漠の怪', enemy: '砂の我愛羅', ai: 2, bg: 'bg-normal' },
-    
-    // Bランク (木ノ葉崩し〜サスケ奪還)
     { id: 11, rank: 'B', title: '伝説の三忍', enemy: '大蛇丸', ai: 2, bg: 'bg-leaf' },
     { id: 12, rank: 'B', title: '医療スペシャリスト', enemy: '薬師カブト', ai: 2, bg: 'bg-leaf' },
     { id: 13, rank: 'B', title: '音の五人衆', enemy: '君麻呂', ai: 2, bg: 'bg-leaf' },
     { id: 14, rank: 'B', title: '終末の谷', enemy: 'うちはサスケ(呪印)', ai: 2, bg: 'bg-valley' },
-    
-    // Aランク (疾風伝・暁)
     { id: 15, rank: 'A', title: '芸術家', enemy: 'デイダラ', ai: 2, bg: 'bg-normal' },
     { id: 16, rank: 'A', title: '傀儡使い', enemy: 'サソリ', ai: 2, bg: 'bg-normal' },
     { id: 17, rank: 'A', title: '不死身の二人組', enemy: '飛段', ai: 3, bg: 'bg-leaf' },
@@ -223,8 +237,6 @@ const QUESTS = [
     { id: 20, rank: 'A', title: '尾のない尾獣', enemy: '干柿鬼鮫', ai: 3, bg: 'bg-valley' },
     { id: 21, rank: 'A', title: '神の使い', enemy: '小南', ai: 3, bg: 'bg-valley' },
     { id: 22, rank: 'A', title: '六道ペイン', enemy: 'ペイン天道', ai: 3, bg: 'bg-leaf' },
-    
-    // Sランク (忍界大戦)
     { id: 23, rank: 'S', title: '五影会談襲撃', enemy: 'うちはサスケ(万華鏡)', ai: 3, bg: 'bg-normal' },
     { id: 24, rank: 'S', title: '穢土転生', enemy: '薬師カブト(仙人)', ai: 3, bg: 'bg-war' },
     { id: 25, rank: 'S', title: '仮面の男', enemy: 'うちはオビト', ai: 3, bg: 'bg-war' },
@@ -236,246 +248,147 @@ const QUESTS = [
 ];
 
 let playerData = { wins: 0, clearedQuest: 0, effect: 'none' };
-let currentQuest = null; 
-let hands, scores, selected, confirmed, turn, gMode='N', pMode='C', p1D=[], p2D=[], firstPt=null, bannedStr=null, historyLog=[];
+let currentQuest = null, hands, scores, selected, confirmed, turn, gMode='N', pMode='C', p1D=[], p2D=[], firstPt=null, bannedStr=null, historyLog=[];
 
-window.onload = function() {
-    loadData(); updateTitleUI(); applySettingsUI();
-    const bg = document.getElementById('bg-container');
-    for(let i=0; i<30; i++){
-        const p = document.createElement('div'); p.className = 'particle'; 
-        const size = Math.random()*5+2; p.style.width=size+'px'; p.style.height=size+'px';
-        p.style.background=(Math.random()>0.5)?'#ff4500':'#00bfff'; p.style.left=Math.random()*100+'%';
-        p.style.animationDuration=(Math.random()*10+5)+'s'; p.style.animationDelay=Math.random()*5+'s'; bg.appendChild(p);
-    }
-};
-
-function loadData() { const d = localStorage.getItem('ninjaBattleData'); if(d) { playerData = JSON.parse(d); if(!playerData.effect) playerData.effect='none'; if(playerData.clearedQuest===undefined) playerData.clearedQuest=0; } }
+window.onload = function() { loadData(); updateTitleUI(); applySettingsUI(); initParticles(); };
+function loadData() { const d=localStorage.getItem('ninjaBattleData'); if(d){ playerData=JSON.parse(d); if(!playerData.effect)playerData.effect='none'; if(playerData.clearedQuest===undefined)playerData.clearedQuest=0; } }
 function saveData() { localStorage.setItem('ninjaBattleData', JSON.stringify(playerData)); }
 function updateTitleUI() { document.getElementById('quest-progress').innerText = `任務達成: ${playerData.clearedQuest}/${QUESTS.length}`; }
 
-// 任務選択
-function openQuestSelect() { renderQuestList(); document.getElementById('quest-select-modal').style.display = 'flex'; }
-function closeQuestSelect() { document.getElementById('quest-select-modal').style.display = 'none'; }
+function openQuestSelect() { renderQuestList(); document.getElementById('quest-select-modal').style.display='flex'; }
+function closeQuestSelect() { document.getElementById('quest-select-modal').style.display='none'; }
 function renderQuestList() {
-    const container = document.getElementById('quest-list-container'); container.innerHTML = "";
-    QUESTS.forEach((q, index) => {
-        const isUnlocked = index <= playerData.clearedQuest; 
-        const isCleared = index < playerData.clearedQuest;
-        const card = document.createElement('div');
-        card.className = 'quest-card ' + (isUnlocked ? '' : 'locked') + (isCleared ? ' cleared' : '');
-        card.onclick = () => { if(isUnlocked) openBriefing(q); };
-        card.innerHTML = `<div class="quest-rank rank-${q.rank}">${q.rank}</div><div class="quest-info"><div class="quest-title">${q.title}</div><div class="quest-enemy">VS ${q.enemy}</div></div><div class="quest-badge">済</div>`;
-        container.appendChild(card);
+    const c = document.getElementById('quest-list-container'); c.innerHTML="";
+    QUESTS.forEach((q,i) => {
+        const un=i<=playerData.clearedQuest, cl=i<playerData.clearedQuest;
+        const d = document.createElement('div');
+        d.className = 'quest-card '+(un?'':'locked')+(cl?' cleared':'');
+        d.onclick=()=>{if(un)openBriefing(q);};
+        d.innerHTML=`<div class="quest-rank rank-${q.rank}">${q.rank}</div><div class="quest-info"><div class="quest-title">${q.title}</div><div class="quest-enemy">VS ${q.enemy}</div></div><div class="quest-badge">済</div>`;
+        c.appendChild(d);
     });
 }
 
-// 任務ブリーフィング (ここでルール選択)
-function openBriefing(quest) {
-    currentQuest = quest;
-    document.getElementById('briefing-target-text').innerText = `VS ${quest.enemy}`;
-    document.getElementById('briefing-modal').style.display = 'flex';
-}
-function closeBriefing() { document.getElementById('briefing-modal').style.display = 'none'; }
-function confirmQuestStart(rule) {
-    gMode = rule; // ここでルール決定
-    pMode = 'C';
-    closeBriefing();
-    closeQuestSelect();
-    startGameCommon();
-    document.getElementById('bg-container').className = currentQuest.bg;
-    document.getElementById('enemy-name-disp').innerText = currentQuest.enemy;
-}
+function openBriefing(q) { currentQuest=q; document.getElementById('briefing-target-text').innerText=`VS ${q.enemy}`; document.getElementById('briefing-modal').style.display='flex'; }
+function closeBriefing() { document.getElementById('briefing-modal').style.display='none'; }
+function openPvPSetup() { currentQuest=null; document.getElementById('briefing-target-text').innerText="対人演習"; document.getElementById('briefing-modal').style.display='flex'; }
 
-// PvP用 (ブリーフィングなしで直接ルール選択または固定？ 今回はPvPもブリーフィング流用)
-function openPvPSetup() {
-    currentQuest = null; // クエストではない
-    document.getElementById('briefing-target-text').innerText = "対人演習 (2P)";
-    document.getElementById('briefing-modal').style.display = 'flex';
-}
-// PvP時は上のconfirmQuestStartが呼ばれるが、currentQuestがnullなので判別
-function confirmQuestStart(rule) {
-    gMode = rule;
-    if(currentQuest) {
-        // Quest Mode
-        pMode = 'C';
-        closeBriefing(); closeQuestSelect();
-        startGameCommon();
-        document.getElementById('bg-container').className = currentQuest.bg;
-        document.getElementById('enemy-name-disp').innerText = currentQuest.enemy;
-    } else {
-        // PvP Mode
-        pMode = 'P';
-        closeBriefing();
-        startGameCommon();
-        document.getElementById('bg-container').className = 'bg-normal';
-        document.getElementById('enemy-name-disp').innerText = 'Player 2';
-    }
-}
-
-function startGameCommon() {
-    document.getElementById('title-screen').style.opacity = '0';
-    setTimeout(()=>{ document.getElementById('title-screen').style.display='none'; }, 500);
+function confirmQuestStart(m) {
+    gMode = m; closeBriefing(); closeQuestSelect();
+    if(currentQuest) { pMode='C'; document.getElementById('bg-container').className=currentQuest.bg; document.getElementById('enemy-name-disp').innerText=currentQuest.enemy; }
+    else { pMode='P'; document.getElementById('bg-container').className='bg-normal'; document.getElementById('enemy-name-disp').innerText='Player 2'; }
+    document.getElementById('title-screen').style.opacity='0'; setTimeout(()=>{document.getElementById('title-screen').style.display='none';},500);
     resetGameData();
 }
-function backToTitle(){
-    const res = document.getElementById('result-screen'); res.style.opacity = '0';
-    setTimeout(() => {
-        res.style.display = 'none';
-        const title = document.getElementById('title-screen'); title.style.display = 'flex';
-        setTimeout(()=>title.style.opacity='1', 10);
-        updateTitleUI(); renderQuestList();
-    }, 500);
+function backToTitle() {
+    const r=document.getElementById('result-screen'); r.style.opacity='0';
+    setTimeout(()=>{r.style.display='none'; const t=document.getElementById('title-screen'); t.style.display='flex'; setTimeout(()=>t.style.opacity='1',10); updateTitleUI(); renderQuestList();},500);
 }
 
-// 設定
-function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; applySettingsUI(); }
-function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
-function applySettingsUI() { ['none','silver','rainbow'].forEach(e => { document.getElementById(`eff-${e}`).className = (playerData.effect===e ? 'opt-btn active' : 'opt-btn'); }); }
-function setEffect(e) { if(e === 'silver' && playerData.wins < 15) { alert("15勝必要"); return; } if(e === 'rainbow' && playerData.wins < 50) { alert("50勝必要"); return; } playerData.effect = e; saveData(); applySettingsUI(); }
-function getCardRankClass() { if(playerData.effect === 'rainbow') return "rank-rainbow"; if(playerData.effect === 'silver') return "rank-silver"; return ""; }
+function openSettings(){document.getElementById('settings-modal').style.display='flex';applySettingsUI();}
+function closeSettings(){document.getElementById('settings-modal').style.display='none';}
+function applySettingsUI(){['none','silver','rainbow'].forEach(e=>{document.getElementById(`eff-${e}`).className=(playerData.effect===e?'opt-btn active':'opt-btn');});}
+function setEffect(e){if(e==='silver'&&playerData.wins<15){alert("15勝必要");return;}if(e==='rainbow'&&playerData.wins<50){alert("50勝必要");return;}playerData.effect=e;saveData();applySettingsUI();}
+function getCardRankClass(){if(playerData.effect==='rainbow')return "rank-rainbow";if(playerData.effect==='silver')return "rank-silver";return "";}
 
-// バトル
 function resetGameData(){ hands={1:[...types],2:[...types]}; scores={1:0,2:0}; selected={1:[],2:[]}; confirmed={1:!1,2:!1}; turn=1; firstPt=null; bannedStr=null; p1D=[]; p2D=[]; document.getElementById('p2-btn').style.visibility=(pMode==='C')?'hidden':'visible'; document.getElementById('history-btn').style.display='block'; updateScoreUI(); unlockArea(1); unlockArea(2); renderHands(); }
-function updateScoreUI(){ 
-    const max = (gMode==='N')?3:5; 
-    document.getElementById('s1').innerText = scores[1]; document.getElementById('s2').innerText = scores[2]; 
-    document.getElementById('status-msg').innerText = `第 ${turn} 戦目 (${max}戦)`; 
-}
+function updateScoreUI(){ document.getElementById('s1').innerText=scores[1]; document.getElementById('s2').innerText=scores[2]; const max=(gMode==='N')?3:5; document.getElementById('status-msg').innerText=`第 ${turn} 戦目 (${max}戦)`; }
 function renderHands(){
-    const rankClass = getCardRankClass();
+    const rc = getCardRankClass();
     for(let p=1;p<=2;p++){
-        const container = document.getElementById(`p${p}-hand`); container.innerHTML = "";
-        hands[p].forEach(type => {
-            const isSel = selected[p].includes(type); 
-            const card = document.createElement("div"); card.className = "card " + rankClass + (isSel ? " selected" : "");
-            const colors = {'火':'#d32f2f','水':'#1976d2','土':'#f57c00','風':'#388e3c','雷':'#fbc02d'}; card.style.backgroundColor = colors[type];
-            card.innerHTML = `<div class="card-inner"><img src="${icons[type]}" onerror="this.style.opacity='0'"><div class="card-label">${type}</div></div>`;
-            card.onclick = () => { if(!confirmed[p]){ isSel ? selected[p]=selected[p].filter(t=>t!==type) : selected[p].push(type); renderHands(); }};
-            container.appendChild(card);
+        const c=document.getElementById(`p${p}-hand`); c.innerHTML="";
+        hands[p].forEach(t=>{
+            const isSel=selected[p].includes(t); const d=document.createElement("div"); d.className="card "+rc+(isSel?" selected":"");
+            d.innerHTML=`<div class="card-inner"><img src="${icons[t]}"><div class="card-label">${t}</div></div>`;
+            d.onclick=()=>{if(!confirmed[p]){isSel?selected[p]=selected[p].filter(x=>x!==t):selected[p].push(t);renderHands();}};
+            c.appendChild(d);
         });
     }
 }
 function confirmMove(p){
-    const s = selected[p].sort((a,b)=>typeOrd[a]-typeOrd[b]); const comboStr = s.join("+");
-    if(s.length===0) return;
-    if(s.length===2 && !(s.includes('水') && s.includes('風'))){ alert("氷遁(水+風)のみ！"); return; }
-    if(s.length===3 && !(s.includes('火') && s.includes('風') && s.includes('土'))){ alert("塵遁(火+風+土)のみ！"); return; }
-    if(s.length>3){ alert("4枚以上は不可"); return; }
-    if(comboStr === bannedStr){ alert(`封印中：${bannedStr} 以外を出せ！`); return; }
-    if(p===1) p1D=[...s]; else p2D=[...s]; confirmed[p]=!0; selected[p]=[]; renderHands(); lockArea(p);
-    if(confirmed[1]){ if(pMode==='C') setTimeout(questAiLogic, 500); else if(confirmed[2]) startBattleAnim(); }
+    const s=selected[p].sort((a,b)=>typeOrd[a]-typeOrd[b]); const cs=s.join("+");
+    if(s.length===0)return; if(s.length===2&&!(s.includes('水')&&s.includes('風'))){alert("氷遁のみ");return;} if(s.length===3&&!(s.includes('火')&&s.includes('風')&&s.includes('土'))){alert("塵遁のみ");return;} if(s.length>3){alert("不可");return;} if(cs===bannedStr){alert("封印中");return;}
+    if(p===1)p1D=[...s];else p2D=[...s]; confirmed[p]=!0; selected[p]=[]; renderHands(); lockArea(p);
+    if(confirmed[1]){ if(pMode==='C')setTimeout(questAi,500); else if(confirmed[2])startAnim(); }
 }
-
-function questAiLogic(){
-    const h2 = hands[2];
-    const aiLvl = currentQuest ? currentQuest.ai : 1; 
-    let bestMove = null;
-    let possibleMoves = [];
-    h2.forEach(c => possibleMoves.push([c]));
-    if(h2.includes('水')&&h2.includes('風')) possibleMoves.push(['水','風']);
-    if(h2.includes('火')&&h2.includes('風')&&h2.includes('土')) possibleMoves.push(['火','風','土']);
-    if(bannedStr) possibleMoves = possibleMoves.filter(m => m.join("+") !== bannedStr);
-
-    if(aiLvl === 1) { bestMove = possibleMoves[Math.floor(Math.random()*possibleMoves.length)]; }
-    else if (aiLvl === 2) { if(Math.random() > 0.5) bestMove = findBestCounter(possibleMoves); else bestMove = possibleMoves[Math.floor(Math.random()*possibleMoves.length)]; }
-    else { bestMove = findBestCounter(possibleMoves); }
-    if(!bestMove) bestMove = possibleMoves[0];
-    p2D = bestMove; confirmed[2]=!0; startBattleAnim();
+function questAi(){
+    const h2=hands[2], ai=currentQuest?currentQuest.ai:1; let bm=null, pm=[];
+    h2.forEach(c=>pm.push([c])); if(h2.includes('水')&&h2.includes('風'))pm.push(['水','風']); if(h2.includes('火')&&h2.includes('風')&&h2.includes('土'))pm.push(['火','風','土']);
+    if(bannedStr)pm=pm.filter(m=>m.join("+")!==bannedStr);
+    if(ai===1)bm=pm[Math.floor(Math.random()*pm.length)];
+    else if(ai===2){ if(Math.random()>0.5)bm=getCounter(pm); else bm=pm[Math.floor(Math.random()*pm.length)]; }
+    else bm=getCounter(pm);
+    p2D=bm||pm[0]; confirmed[2]=!0; startAnim();
 }
-function findBestCounter(moves) {
-    for(let move of moves) { if(isWin(move, p1D)) return move; }
-    for(let move of moves) { if(isDraw(move, p1D)) return move; }
-    return null;
-}
-function isWin(m, o) { if(m.length>o.length)return true; if(m.length<o.length)return false; if(m.length===1) return rel[m[0]]===o[0]; return false; }
-function isDraw(m, o) { return m.join("+")===o.join("+"); }
+function getCounter(moves){ for(let m of moves)if(isWin(m,p1D))return m; for(let m of moves)if(isDraw(m,p1D))return m; return null; }
+function isWin(m,o){if(m.length>o.length)return 1;if(m.length<o.length)return 0;if(m.length===1)return rel[m[0]]===o[0];return 0;}
+function isDraw(m,o){return m.join("+")===o.join("+");}
 
-function startBattleAnim(){
+function startAnim(){
     document.getElementById('p1-hand').style.opacity='0'; document.getElementById('p2-hand').style.opacity='0'; document.getElementById('battle-center').style.opacity='0';
-    const layer = document.getElementById('anim-layer'); layer.innerHTML = '';
-    const c1 = createClash(p1D, '#ff4500'); c1.classList.add('anim-p1-enter'); layer.appendChild(c1);
-    const c2 = createClash(p2D, '#00bfff'); c2.classList.add('anim-p2-enter'); layer.appendChild(c2);
-    setTimeout(() => { resolveBattle(); }, 1600);
+    const l=document.getElementById('anim-layer'); l.innerHTML='';
+    const c1=mkClash(p1D,'#ff4500'), c2=mkClash(p2D,'#00bfff');
+    c1.classList.add('anim-p1-enter'); c2.classList.add('anim-p2-enter'); l.appendChild(c1); l.appendChild(c2);
+    setTimeout(resolve,1600);
 }
-function createClash(cards, color){
-    const box = document.createElement('div'); box.className = 'clash-container'; box.style.borderColor = color;
-    const rank = getCardRankClass(); if(rank) box.classList.add(rank);
-    cards.forEach(t => { const img = document.createElement('img'); img.src = icons[t]; img.className = 'clash-img'; img.style.borderColor = color; box.appendChild(img); });
-    return box;
+function mkClash(cards,color){
+    const b=document.createElement('div'); b.className='clash-container'; b.style.borderColor=color; const rc=getCardRankClass(); if(rc)b.classList.add(rc);
+    cards.forEach(t=>{const i=document.createElement('img'); i.src=icons[t]; i.className='clash-img'; i.style.borderColor=color; b.appendChild(i);}); return b;
 }
+function resolve(){
+    const m1=p1D,m2=p2D,s1=m1.join("+"),s2=m2.join("+");
+    let w=0; if(m1.length>m2.length)w=1;else if(m2.length>m1.length)w=2;else if(m1.length===1&&rel[m1[0]]===m2[0])w=1;else if(m1.length===1&&rel[m2[0]]===m1[0])w=2;
+    
+    const c1=document.querySelector('.anim-p1-enter'), c2=document.querySelector('.anim-p2-enter');
+    if(c1){c1.style.animation='none';c1.offsetHeight;c1.style.transform='translateY(65px) scale(1)';}
+    if(c2){c2.style.animation='none';c2.offsetHeight;c2.style.transform='translateY(-65px) rotate(180deg) scale(1)';}
+    const txt=document.getElementById('result-text'); let msg="";
 
-function resolveBattle(){
-    const m1=p1D, m2=p2D, s1=m1.join("+"), s2=m2.join("+");
-    let win=0;
-    if(m1.length > m2.length) win=1; else if(m2.length > m1.length) win=2;
-    else if(m1.length===1 && rel[m1[0]]===m2[0]) win=1; else if(m1.length===1 && rel[m2[0]]===m1[0]) win=2;
-
-    const c1 = document.querySelector('.anim-p1-enter');
-    const c2 = document.querySelector('.anim-p2-enter');
-    if(c1) { c1.style.animation='none'; c1.offsetHeight; c1.style.transform='translateY(65px) scale(1)'; }
-    if(c2) { c2.style.animation='none'; c2.offsetHeight; c2.style.transform='translateY(-65px) rotate(180deg) scale(1)'; }
-
-    const resText = document.getElementById('result-text');
-    let msg = "";
-
-    if(win!==0){
-        scores[win]++; if(firstPt===null) firstPt=win;
-        msg = (win===1)?"勝機！":"危機！"; resText.style.color = (win===1)?"#ff4500":"#00bfff";
-        if(win===1){ c1.classList.add('anim-p1-win'); c2.classList.add('anim-lose-fire-p2'); } 
-        else { c2.classList.add('anim-p2-win'); c1.classList.add('anim-lose-fire-p1'); }
-        setTimeout(() => consumeCards(m1, m2), 2000);
+    if(w!==0){
+        scores[w]++; if(firstPt===null)firstPt=w; msg=w===1?"勝機!":"危機!"; txt.style.color=w===1?"#ff4500":"#00bfff";
+        if(w===1){c1.classList.add('anim-p1-win'); c2.classList.add('anim-lose-fire-p2');} // 簡易化:常に炎エフェクトで散る(全実装はコード量過多のため)
+        else{c2.classList.add('anim-p2-win'); c1.classList.add('anim-lose-fire-p1');}
+        setTimeout(()=>consume(m1,m2),2000);
     } else {
-        msg = "相殺"; resText.style.color = "#fff";
-        c1.classList.add('anim-repel-p1'); c2.classList.add('anim-repel-p2');
-        if (s1 === s2) { 
-            if (gMode === 'N') {
-                if (turn === 3) { msg="相殺(終)"; setTimeout(() => consumeCards(m1, m2), 2000); }
-                else { msg="出し直し"; bannedStr = null; setTimeout(() => resetTurn(), 1500); }
-            } else if (gMode === 'A' && turn === 1) { 
-                bannedStr = s1; msg="封印!"; setTimeout(() => resetTurn(), 1500);
-            } else { msg="相殺"; setTimeout(() => consumeCards(m1, m2), 2000); }
-        } else { setTimeout(() => consumeCards(m1, m2), 2000); }
+        msg="相殺"; txt.style.color="#fff"; c1.classList.add('anim-repel-p1'); c2.classList.add('anim-repel-p2');
+        if(s1===s2){
+            if(gMode==='N'&&turn===3){msg="相殺(終)"; setTimeout(()=>consume(m1,m2),2000);}
+            else if(gMode==='A'&&turn===1){bannedStr=s1; msg="封印!"; setTimeout(resetTurn,1500);}
+            else {setTimeout(resetTurn,1500);}
+        } else setTimeout(()=>consume(m1,m2),2000);
     }
-    resText.innerText = msg; resText.style.animation = 'text-pop 0.5s forwards';
-    setTimeout(() => {
-        document.getElementById('anim-layer').innerHTML = ''; resText.style.opacity = '0'; resText.style.animation = 'none';
+    txt.innerText=msg; txt.style.animation='text-pop 0.5s forwards';
+    setTimeout(()=>{
+        document.getElementById('anim-layer').innerHTML=''; txt.style.opacity='0'; txt.style.animation='none';
         document.getElementById('p1-hand').style.opacity='1'; document.getElementById('p2-hand').style.opacity='1'; document.getElementById('battle-center').style.opacity='1';
-        updateScoreUI(); renderHands(); checkGameOver();
-    }, 2000);
+        updateScoreUI(); renderHands(); checkEnd();
+    },2000);
 }
-
-function checkGameOver(){
-    const limit = (gMode === 'N') ? 3 : 5;
-    if (scores[1] >= 2 || scores[2] >= 2) { setTimeout(judgeFinal, 500); return; }
-    if (gMode === 'N' && turn > limit) { setTimeout(judgeFinal, 500); return; }
-    if (gMode === 'A' && (turn > limit || hands[1].length === 0 || hands[2].length === 0)) { setTimeout(judgeFinal, 500); return; }
-    if (hands[1].length === 0) { setTimeout(judgeFinal, 500); return; } // 安全策
+function checkEnd(){
+    if(scores[1]>=2||scores[2]>=2){setTimeout(judge,500);return;}
+    if(gMode==='N'&&turn>3){setTimeout(judge,500);return;}
+    if(gMode==='A'&&(turn>5||hands[1].length===0)){setTimeout(judge,500);return;}
+    if(hands[1].length===0){setTimeout(judge,500);return;}
 }
-function consumeCards(m1, m2) { m1.forEach(c=>hands[1].splice(hands[1].indexOf(c),1)); m2.forEach(c=>hands[2].splice(hands[2].indexOf(c),1)); turn++; bannedStr=null; resetTurn(); }
+function consume(m1,m2){ m1.forEach(c=>hands[1].splice(hands[1].indexOf(c),1)); m2.forEach(c=>hands[2].splice(hands[2].indexOf(c),1)); turn++; bannedStr=null; resetTurn(); }
 function resetTurn(){ confirmed={1:!1,2:!1}; p1D=[]; p2D=[]; selected={1:[],2:[]}; unlockArea(1); unlockArea(2); renderHands(); }
-function judgeFinal(){
-    let w = 0, reason = "";
-    if (scores[1] > scores[2]) { w = 1; reason = "勝星多数"; } else if (scores[2] > scores[1]) { w = 2; reason = "勝星多数"; }
-    else {
-        if (hands[1].length > hands[2].length) { w = 1; reason = "残手札数"; } else if (hands[2].length > hands[1].length) { w = 2; reason = "残手札数"; }
-        else { if (firstPt === 1) { w = 1; reason = "先陣の功"; } else if (firstPt === 2) { w = 2; reason = "先陣の功"; } else { w = 0; reason = "完全引分"; } }
-    }
-    if(w === 1 && currentQuest) {
-        playerData.wins++;
-        if(currentQuest.id === playerData.clearedQuest + 1) { playerData.clearedQuest++; reason += " (任務達成！)"; }
-    }
+function judge(){
+    let w=0,r=""; if(scores[1]>scores[2]){w=1;r="勝星";}else if(scores[2]>scores[1]){w=2;r="勝星";}else{if(hands[1].length>hands[2].length){w=1;r="残数";}else if(hands[2]>hands[1]){w=2;r="残数";}else{if(firstPt===1){w=1;r="先取";}else if(firstPt===2){w=2;r="先取";}else{w=0;r="引分";}}}
+    if(w===1){playerData.wins++; if(currentQuest&&currentQuest.id===playerData.clearedQuest+1){playerData.clearedQuest++; r+=" (任務達成!)";}}
     saveData();
-    const resScreen = document.getElementById('result-screen');
-    document.getElementById('res-title').innerText = (w===1 ? '勝利' : (w===2 ? '敗北' : '引分'));
-    document.getElementById('res-reason').innerText = reason;
-    resScreen.style.display = 'flex';
-    setTimeout(()=>resScreen.style.opacity='1', 10);
+    const sc=document.getElementById('result-screen');
+    document.getElementById('res-title').innerText=w===1?'勝利':(w===2?'敗北':'引分');
+    document.getElementById('res-reason').innerText=r;
+    sc.style.display='flex'; setTimeout(()=>sc.style.opacity='1',10);
 }
-function showHistory(){ document.getElementById('history-modal').style.display = 'flex'; updateHistoryModal(); }
-function closeHistory(){ document.getElementById('history-modal').style.display = 'none'; }
+function showHistory(){document.getElementById('history-modal').style.display='flex';}
+function closeHistory(){document.getElementById('history-modal').style.display='none';}
 function lockArea(p){ document.getElementById(`p${p}-area`).style.filter='grayscale(100%) brightness(0.3)'; document.getElementById(`p${p}-btn`).style.pointerEvents='none'; }
 function unlockArea(p){ document.getElementById(`p${p}-area`).style.filter='none'; document.getElementById(`p${p}-btn`).style.pointerEvents='auto'; }
+function initParticles(){
+    const bg=document.getElementById('bg-container');
+    for(let i=0;i<30;i++){const p=document.createElement('div');p.className='particle';const s=Math.random()*5+2;p.style.width=s+'px';p.style.height=s+'px';p.style.background=(Math.random()>0.5)?'#ff4500':'#00bfff';p.style.left=Math.random()*100+'%';p.style.animationDuration=(Math.random()*10+5)+'s';p.style.animationDelay=Math.random()*5+'s';bg.appendChild(p);}
+}
 </script>
 </body>
 </html>
