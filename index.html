@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>忍術性質変化バトル Ver.55</title>
+<title>忍術性質変化バトル Ver.57</title>
 <link href="https://fonts.googleapis.com/css2?family=Reggae+One&display=swap" rel="stylesheet">
 <style>
     :root { --p1-color: #ff4500; --p2-color: #00bfff; --gold: #ffd700; --silver: #c0c0c0; --dark-bg: #050505; }
@@ -27,25 +27,14 @@
     #title-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
     .main-logo { font-size: 3.5rem; color: var(--gold); text-shadow: 0 0 10px #ff8c00; margin-bottom: 10px; animation: logo-breath 3s infinite; }
     @keyframes logo-breath { 0%,100%{transform:scale(1); text-shadow:0 0 10px #ff8c00;} 50%{transform:scale(1.05); text-shadow:0 0 25px var(--gold);} }
-    
-    /* ランク・レベル表示 (NEW) */
-    #player-status-box { 
-        width: 80%; max-width: 300px;
-        border-top: 1px solid var(--gold); border-bottom: 1px solid var(--gold); 
-        margin-bottom: 30px; text-align: center; padding: 10px; background: rgba(0,0,0,0.5); 
-        cursor: pointer; transition: 0.2s;
-    }
+    #player-status-box { width: 80%; max-width: 300px; border-top: 1px solid var(--gold); border-bottom: 1px solid var(--gold); margin-bottom: 30px; text-align: center; padding: 10px; background: rgba(0,0,0,0.5); cursor: pointer; transition: 0.2s; }
     #player-status-box:active { transform: scale(0.95); background: rgba(255,215,0,0.1); }
-    
     .status-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px; }
     #level-val { font-size: 1.5rem; color: #fff; }
     #rank-val { font-size: 1.2rem; color: var(--gold); }
-    
-    /* EXPバー */
     .exp-bar-container { width: 100%; height: 8px; background: #333; border-radius: 4px; overflow: hidden; position: relative; }
     .exp-bar-fill { height: 100%; background: linear-gradient(90deg, #ff8c00, var(--gold)); width: 0%; transition: width 1s ease-out; }
     .exp-text { font-size: 0.7rem; color: #aaa; text-align: right; margin-top: 2px; }
-
     .main-btn { width: 260px; padding: 18px; font-size: 1.4rem; color: #000; background: var(--gold); border: none; border-radius: 50px; cursor: pointer; font-family: 'Reggae One'; margin-bottom: 20px; box-shadow: 0 0 20px rgba(255,215,0,0.5); }
     .sub-btn { width: 200px; padding: 10px; font-size: 1rem; color: #ddd; background: rgba(255,255,255,0.1); border: 1px solid #666; border-radius: 30px; cursor: pointer; font-family: 'Reggae One'; margin-bottom: 10px; }
 
@@ -69,11 +58,15 @@
     .player-area { height: 35%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; }
     #p2-area { transform: rotate(180deg); }
     .hand { display: flex; justify-content: center; gap: 5px; min-height: 110px; width: 100%; align-items: flex-end; perspective: 1000px; }
+    
+    /* カードデザイン */
     .card { width: 68px; height: 98px; border-radius: 6px; background: #000; border: 2px solid #555; position: relative; transition: 0.2s; overflow: hidden; }
     .card-inner { width: 100%; height: 100%; position: relative; z-index: 1; }
     .card img { width: 100%; height: 100%; object-fit: cover; opacity: 1; display: block; }
     .card-label { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.8); font-size: 10px; z-index: 5; padding: 2px 0; }
     .card.selected { transform: translateY(-25px) scale(1.1); border-color: var(--gold); box-shadow: 0 0 15px var(--gold); z-index: 100; }
+    
+    /* ホログラム */
     .card.rank-silver { border-color: #aaa; }
     .card.rank-silver::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 70%); pointer-events: none; z-index: 10; mix-blend-mode: screen; animation: shine 3s infinite; }
     .card.rank-rainbow { border-color: #fff; animation: border-rgb 3s linear infinite; }
@@ -92,10 +85,9 @@
     #battle-center { z-index: 50; height: 30%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
     #score-display { font-size: 2rem; text-shadow: 0 0 10px #000; }
 
-    /* --- 結果画面 (EXP対応) --- */
+    /* 結果画面 */
     #result-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3200; display: none; flex-direction: column; align-items: center; justify-content: center; }
     #result-text { position: absolute; font-size: 5rem; text-shadow: 0 0 20px var(--gold); opacity: 0; z-index: 2500; }
-    
     #res-exp-box { width: 80%; max-width: 300px; margin: 20px 0; background: #222; padding: 15px; border-radius: 10px; border: 1px solid #444; }
     .res-exp-label { font-size: 0.9rem; color: #aaa; display: flex; justify-content: space-between; margin-bottom: 5px; }
     #levelup-text { position: absolute; top: 40%; width: 100%; text-align: center; font-size: 4rem; color: var(--gold); text-shadow: 0 0 20px red; opacity: 0; pointer-events: none; z-index: 3300; }
@@ -108,20 +100,27 @@
     .opt-btn { flex: 1; padding: 10px; background: #222; color: #888; border: 1px solid #444; border-radius: 5px; font-family: 'Reggae One'; }
     .opt-btn.active { background: rgba(255,215,0,0.2); color: var(--gold); border-color: var(--gold); }
 
-    /* アニメーション */
+    /* アニメーション (ズームなし修正版) */
     .anim-p1-enter { animation: p1-enter 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
     .anim-p2-enter { animation: p2-enter 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-    @keyframes p1-enter { 0%{transform:translateY(100vh) scale(0.5); opacity:0;} 60%{transform:translateY(50px) scale(1.2); opacity:1;} 100%{transform:translateY(65px) scale(1); opacity:1;} }
-    @keyframes p2-enter { 0%{transform:translateY(-100vh) rotate(180deg) scale(0.5); opacity:0;} 60%{transform:translateY(-50px) rotate(180deg) scale(1.2); opacity:1;} 100%{transform:translateY(-65px) rotate(180deg) scale(1); opacity:1;} }
+    /* スケール拡大を削除し、位置移動のみにする */
+    @keyframes p1-enter { 0%{transform:translateY(100vh);} 60%{transform:translateY(50px);} 100%{transform:translateY(65px);} }
+    @keyframes p2-enter { 0%{transform:translateY(-100vh) rotate(180deg);} 60%{transform:translateY(-50px) rotate(180deg);} 100%{transform:translateY(-65px) rotate(180deg);} }
+    
     .anim-p1-win { animation: p1-win 0.4s forwards; } .anim-p2-win { animation: p2-win 0.4s forwards; }
-    @keyframes p1-win { from{transform:translateY(65px) scale(1);} to{transform:translateY(-30px) scale(1.4); z-index:2100;} }
-    @keyframes p2-win { from{transform:translateY(-65px) rotate(180deg) scale(1);} to{transform:translateY(30px) rotate(180deg) scale(1.4); z-index:2100;} }
+    /* 勝利時も大きくしすぎない */
+    @keyframes p1-win { from{transform:translateY(65px);} to{transform:translateY(-20px); z-index:2100;} }
+    @keyframes p2-win { from{transform:translateY(-65px) rotate(180deg);} to{transform:translateY(20px) rotate(180deg); z-index:2100;} }
+    
     .anim-repel-p1 { animation: repel-p1 0.5s forwards; } .anim-repel-p2 { animation: repel-p2 0.5s forwards; }
-    @keyframes repel-p1 { from{transform:translateY(65px);} to{transform:translateY(250px) rotate(-45deg) scale(0.5); opacity:0;} }
-    @keyframes repel-p2 { from{transform:translateY(-65px) rotate(180deg);} to{transform:translateY(-250px) rotate(225deg) scale(0.5); opacity:0;} }
+    @keyframes repel-p1 { from{transform:translateY(65px);} to{transform:translateY(250px) rotate(-45deg); opacity:0;} }
+    @keyframes repel-p2 { from{transform:translateY(-65px) rotate(180deg);} to{transform:translateY(-250px) rotate(225deg); opacity:0;} }
+    
+    /* 敗北時もスケール操作を控える */
     .anim-lose-fire-p2 { animation: burn-p2 0.8s forwards; } .anim-lose-fire-p1 { animation: burn-p1 0.8s forwards; }
-    @keyframes burn-p2 { 0%{transform:translateY(-65px) rotate(180deg); filter:sepia(1) saturate(5) hue-rotate(-50deg);} 100%{transform:translateY(-150px) rotate(180deg) scale(0.8); opacity:0; filter:brightness(0);} }
-    @keyframes burn-p1 { 0%{transform:translateY(65px); filter:sepia(1) saturate(5) hue-rotate(-50deg);} 100%{transform:translateY(150px) scale(0.8); opacity:0; filter:brightness(0);} }
+    @keyframes burn-p2 { 0%{transform:translateY(-65px) rotate(180deg); filter:sepia(1) saturate(5) hue-rotate(-50deg);} 100%{transform:translateY(-150px) rotate(180deg); opacity:0; filter:brightness(0);} }
+    @keyframes burn-p1 { 0%{transform:translateY(65px); filter:sepia(1) saturate(5) hue-rotate(-50deg);} 100%{transform:translateY(150px); opacity:0; filter:brightness(0);} }
+    
     @keyframes text-pop { 0%{transform:scale(0); opacity:0;} 50%{transform:scale(1.2); opacity:1;} 100%{transform:scale(1); opacity:1;} }
 
 </style>
@@ -132,19 +131,12 @@
 
 <div id="title-screen">
     <div class="main-logo">忍術<br>性質変化</div>
-    
     <div id="player-status-box" onclick="openTitleSelect()">
         <div id="player-title">見習い忍者</div>
-        <div class="status-row">
-            <div id="rank-val">アカデミー生</div>
-            <div id="level-val">Lv.1</div>
-        </div>
-        <div class="exp-bar-container">
-            <div class="exp-bar-fill" id="title-exp-bar"></div>
-        </div>
+        <div class="status-row"><div id="rank-val">アカデミー生</div><div id="level-val">Lv.1</div></div>
+        <div class="exp-bar-container"><div class="exp-bar-fill" id="title-exp-bar"></div></div>
         <div class="exp-text" id="title-exp-text">0 / 100</div>
     </div>
-
     <button class="main-btn" onclick="openQuestSelect()">任務開始</button>
     <button class="sub-btn" onclick="openPvPSetup()">対人演習</button>
     <button class="sub-btn" onclick="openSettings()">環境設定</button>
@@ -188,27 +180,19 @@
 <div id="result-screen">
     <div id="res-title" style="font-size:3rem; color:var(--gold);">勝負あり</div>
     <div id="res-reason" style="font-size:1.2rem; color:#ccc; margin-bottom:20px;"></div>
-    
     <div id="res-exp-box">
         <div class="res-exp-label"><span>経験値獲得</span><span id="res-gain-text">+50</span></div>
-        <div class="exp-bar-container">
-            <div class="exp-bar-fill" id="res-exp-bar" style="width:0%"></div>
-        </div>
+        <div class="exp-bar-container"><div class="exp-bar-fill" id="res-exp-bar" style="width:0%"></div></div>
         <div class="exp-text" id="res-exp-val">0 / 100</div>
     </div>
-
     <button class="main-btn" onclick="backToTitle()">タイトルへ</button>
 </div>
 <div id="levelup-text">LEVEL UP!!</div>
 
-<div id="cutin-overlay">
-    <div class="cutin-bg"></div>
-    <div class="cutin-text" id="cutin-text">火遁</div>
-</div>
+<div id="cutin-overlay"><div class="cutin-bg"></div><div class="cutin-text" id="cutin-text">火遁</div></div>
 
 <div id="anim-layer"></div>
 <div id="result-text"></div>
-
 <div id="p2-area" class="player-area">
     <div style="color:#aaa; font-size:0.9rem;" id="enemy-name-disp">CPU</div>
     <div id="p2-hand" class="hand"></div>
@@ -263,19 +247,12 @@ const QUESTS = [
     { id: 29, rank: 'S', title: 'チャクラの祖', enemy: '大筒木カグヤ', ai: 3, bg: 'bg-war' },
     { id: 30, rank: 'S', title: '和解の印', enemy: 'うちはサスケ(最後)', ai: 3, bg: 'bg-valley' }
 ];
-
 const TITLES = [
-    { id: 't1', text: '見習い忍者', lv: 1 },
-    { id: 't2', text: '一人前の忍者', lv: 5 },
-    { id: 't3', text: '木ノ葉の英雄', lv: 15 },
-    { id: 't4', text: '写輪眼の', lv: 25 },
-    { id: 't5', text: '伝説の三忍', lv: 35 },
-    { id: 't6', text: '黄色い閃光', lv: 45 },
-    { id: 't7', text: '火影', lv: 60 },
-    { id: 't8', text: '忍の神', lv: 100 }
+    { id: 't1', text: '見習い忍者', lv: 1 }, { id: 't2', text: '一人前の忍者', lv: 5 }, { id: 't3', text: '木ノ葉の英雄', lv: 15 },
+    { id: 't4', text: '写輪眼の', lv: 25 }, { id: 't5', text: '伝説の三忍', lv: 35 }, { id: 't6', text: '黄色い閃光', lv: 45 },
+    { id: 't7', text: '火影', lv: 60 }, { id: 't8', text: '忍の神', lv: 100 }
 ];
 
-// 初期データ: レベル制へ移行
 let playerData = { level: 1, exp: 0, clearedQuest: 0, effect: 'none', title: '見習い忍者', wins: 0 }; 
 let currentQuest = null, hands, scores, selected, confirmed, turn, gMode='N', pMode='C', p1D=[], p2D=[], firstPt=null, bannedStr=null;
 
@@ -284,7 +261,6 @@ function loadData() {
     const d=localStorage.getItem('ninjaBattleData'); 
     if(d){ 
         const tmp=JSON.parse(d); 
-        // 旧データ互換処理
         playerData.clearedQuest = tmp.clearedQuest || 0;
         playerData.effect = tmp.effect || 'none';
         playerData.title = tmp.title || '見習い忍者';
@@ -294,8 +270,7 @@ function loadData() {
     } 
 }
 function saveData() { localStorage.setItem('ninjaBattleData', JSON.stringify(playerData)); }
-
-function getNextExp() { return playerData.level * 100; } // 必要経験値: Lv * 100
+function getNextExp() { return playerData.level * 100; }
 
 function updateTitleUI() {
     let rName = "アカデミー生";
@@ -303,14 +278,11 @@ function updateTitleUI() {
     document.getElementById('rank-val').innerText = rName;
     document.getElementById('level-val').innerText = `Lv.${playerData.level}`;
     document.getElementById('player-title').innerText = playerData.title;
-    
-    // タイトル画面のバー更新
     const pct = (playerData.exp / getNextExp()) * 100;
     document.getElementById('title-exp-bar').style.width = `${pct}%`;
     document.getElementById('title-exp-text').innerText = `${playerData.exp} / ${getNextExp()}`;
 }
 
-// 任務選択
 function openQuestSelect() { 
     const c=document.getElementById('quest-list-container'); c.innerHTML="";
     QUESTS.forEach((q,i)=>{
@@ -334,10 +306,9 @@ function confirmQuestStart(m){
 }
 function backToTitle(){ location.reload(); }
 
-// 設定・通り名
 function openSettings(){document.getElementById('settings-modal').style.display='flex'; applySettingsUI();}
 function closeSettings(){document.getElementById('settings-modal').style.display='none';}
-function applySettingsUI(){ ['none','silver','rainbow'].forEach(e=>{ document.getElementById(`eff-${e}`).style.borderColor = (playerData.effect===e?'var(--gold)':'#444'); }); }
+function applySettingsUI(){ ['none','silver','rainbow'].forEach(e=>{ document.getElementById(`eff-${e}`).className=(playerData.effect===e?'opt-btn active':'opt-btn'); }); }
 function setEffect(e){ if((e==='silver'&&playerData.level<15)||(e==='rainbow'&&playerData.level<50)){alert("レベル不足");return;} playerData.effect=e; saveData(); applySettingsUI(); }
 
 function openTitleSelect(){
@@ -345,7 +316,7 @@ function openTitleSelect(){
     TITLES.forEach(t=>{
         const un=playerData.level>=t.lv;
         const d=document.createElement('div'); d.className='title-item '+(un?'':'locked')+(playerData.title===t.text?' selected':'');
-        d.innerText = t.text + (un ? '' : ` (Lv${t.lv}で解放)`);
+        d.innerText = t.text + (un ? '' : ` (Lv${t.lv})`);
         d.onclick=()=>{if(un){playerData.title=t.text; saveData(); updateTitleUI(); closeTitleSelect();}};
         c.appendChild(d);
     });
@@ -353,7 +324,6 @@ function openTitleSelect(){
 }
 function closeTitleSelect(){document.getElementById('title-select-modal').style.display='none';}
 
-// ゲームロジック
 function getCardRankClass(){ if(playerData.effect==='rainbow')return"rank-rainbow"; if(playerData.effect==='silver')return"rank-silver"; return""; }
 function resetGameData(){ hands={1:[...types],2:[...types]}; scores={1:0,2:0}; selected={1:[],2:[]}; confirmed={1:!1,2:!1}; turn=1; firstPt=null; bannedStr=null; p1D=[]; p2D=[]; document.getElementById('p2-btn').style.visibility=(pMode==='C')?'hidden':'visible'; updateScoreUI(); unlockArea(1); unlockArea(2); renderHands(); }
 function updateScoreUI(){ document.getElementById('s1').innerText=scores[1]; document.getElementById('s2').innerText=scores[2]; document.getElementById('status-msg').innerText=`第 ${turn} 戦目`; }
@@ -387,10 +357,9 @@ function isWin(m,o){if(m.length>o.length)return 1;if(m.length<o.length)return 0;
 
 function startAnim(){
     const cStr = p1D.join("+");
-    let cutText = "";
-    if(p1D.length===3) cutText="塵遁"; else if(p1D.length===2) cutText="氷遁"; else cutText = p1D[0] + "遁";
-    const ov = document.getElementById('cutin-overlay'); const txt = document.getElementById('cutin-text');
-    txt.innerText = cutText; ov.style.animation = "cutin-anim 1.5s forwards";
+    let cutText = ""; if(p1D.length===3) cutText="塵遁"; else if(p1D.length===2) cutText="氷遁"; else cutText = p1D[0] + "遁";
+    const ov = document.getElementById('cutin-overlay'); document.getElementById('cutin-text').innerText = cutText;
+    ov.style.animation = "cutin-anim 1.5s forwards";
 
     setTimeout(()=>{
         document.getElementById('p1-hand').style.opacity='0'; document.getElementById('p2-hand').style.opacity='0'; document.getElementById('battle-center').style.opacity='0';
@@ -406,73 +375,82 @@ function mkClash(cards,color){
 }
 function resolve(){
     document.getElementById('cutin-overlay').style.animation = "none";
-    const m1=p1D,m2=p2D; let w=0; 
+    const m1=p1D,m2=p2D, s1=m1.join("+"),s2=m2.join("+"); 
+    let w=0; 
     if(m1.length>m2.length)w=1;else if(m2.length>m1.length)w=2;else if(m1.length===1&&rel[m1[0]]===m2[0])w=1;else if(m1.length===1&&rel[m2[0]]===m1[0])w=2;
     const c1=document.querySelector('.anim-p1-enter'), c2=document.querySelector('.anim-p2-enter');
-    if(c1){c1.style.animation='none';c1.offsetHeight;c1.style.transform='translateY(65px) scale(1)';}
-    if(c2){c2.style.animation='none';c2.offsetHeight;c2.style.transform='translateY(-65px) rotate(180deg) scale(1)';}
+    if(c1){c1.style.animation='none';c1.offsetHeight;c1.style.transform='translateY(65px)';}
+    if(c2){c2.style.animation='none';c2.offsetHeight;c2.style.transform='translateY(-65px) rotate(180deg)';}
     const txt=document.getElementById('result-text'); let msg="";
+    let nextAct = null;
+
     if(w!==0){
         scores[w]++; if(firstPt===null)firstPt=w; msg=w===1?"勝機!":"危機!"; txt.style.color=w===1?"#ff4500":"#00bfff";
         if(w===1){c1.classList.add('anim-p1-win'); c2.classList.add('anim-lose-fire-p2');} 
         else{c2.classList.add('anim-p2-win'); c1.classList.add('anim-lose-fire-p1');}
-    } else { msg="相殺"; txt.style.color="#fff"; c1.classList.add('anim-repel-p1'); c2.classList.add('anim-repel-p2'); }
+        nextAct = () => consume(m1,m2);
+    } else {
+        msg="相殺"; txt.style.color="#fff"; c1.classList.add('anim-repel-p1'); c2.classList.add('anim-repel-p2');
+        if (s1 === s2) { 
+            // 修正箇所: ノーマルのあいこは消費しない！
+            if (gMode === 'N') {
+                if (turn === 3) { msg="相殺(終)"; nextAct = () => consume(m1,m2); }
+                else { msg="出し直し"; bannedStr = null; nextAct = () => resetTurn(); }
+            } else { 
+                if (turn === 1) { bannedStr = s1; msg="封印!"; }
+                nextAct = () => consume(m1,m2);
+            }
+        } else { nextAct = () => consume(m1,m2); }
+    }
+    
     txt.innerText=msg; txt.style.opacity='1'; txt.style.animation='text-pop 0.5s forwards';
+    
     setTimeout(()=>{
         document.getElementById('anim-layer').innerHTML=''; txt.style.opacity='0'; txt.style.animation='none';
         document.getElementById('p1-hand').style.opacity='1'; document.getElementById('p2-hand').style.opacity='1'; document.getElementById('battle-center').style.opacity='1';
-        if(w===0&&gMode==='A'&&turn===1) bannedStr=m1.join("+");
-        consume(m1,m2); checkEnd();
+        nextAct();
+        checkEnd();
     },2000);
 }
+
 function checkEnd(){
-    if((scores[1]>=2||scores[2]>=2)||(gMode==='N'&&turn>3)||(gMode==='A'&&(turn>5||hands[1].length===0||hands[2].length===0))){ setTimeout(judge,500); }
+    const limit = (gMode === 'N') ? 3 : 5;
+    let isEnd = false;
+    if (scores[1] >= 2 || scores[2] >= 2) isEnd = true;
+    else if (gMode === 'N' && turn > limit) isEnd = true;
+    else if (gMode === 'A' && (turn > limit || hands[1].length === 0 || hands[2].length === 0)) isEnd = true;
+    else if (hands[1].length === 0) isEnd = true;
+
+    if(isEnd) setTimeout(judge, 500);
 }
-function consume(m1,m2){ m1.forEach(c=>hands[1].splice(hands[1].indexOf(c),1)); m2.forEach(c=>hands[2].splice(hands[2].indexOf(c),1)); turn++; if(bannedStr&&turn>2)bannedStr=null; resetTurn(); }
+function consume(m1,m2){ m1.forEach(c=>hands[1].splice(hands[1].indexOf(c),1)); m2.forEach(c=>hands[2].splice(hands[2].indexOf(c),1)); turn++; if(bannedStr&&turn>2)bannedStr=null; updateScoreUI(); resetTurn(); }
 function resetTurn(){ confirmed={1:!1,2:!1}; p1D=[]; p2D=[]; selected={1:[],2:[]}; unlockArea(1); unlockArea(2); renderHands(); }
 
 function judge(){
     let w=0; if(scores[1]>scores[2])w=1; else if(scores[2]>scores[1])w=2; else if(hands[1].length>hands[2].length)w=1; else if(hands[2]>hands[1])w=2; else if(firstPt===1)w=1; else if(firstPt===2)w=2;
     
-    // --- EXP計算 ---
-    let gain = 0;
-    if(w===1) { gain = 50; if(currentQuest) gain += 30; } // 勝利
-    else gain = 15; // 敗北・引分
-    
+    let gain=0; if(w===1){ gain=50; if(currentQuest)gain+=30; } else gain=15;
     playerData.exp += gain;
     let isLvlUp = false;
-    // レベルアップ判定
-    while(playerData.exp >= getNextExp()) {
-        playerData.exp -= getNextExp();
-        playerData.level++;
-        isLvlUp = true;
-    }
+    while(playerData.exp >= getNextExp()){ playerData.exp -= getNextExp(); playerData.level++; isLvlUp=true; }
 
-    if(w===1) {
+    if(w===1){
         playerData.wins++;
         if(currentQuest&&currentQuest.id===playerData.clearedQuest+1) playerData.clearedQuest++;
     }
     saveData();
 
-    // 結果表示
     document.getElementById('res-title').innerText = w===1?'勝利':(w===2?'敗北':'引分');
     document.getElementById('res-reason').innerText = w===1?'見事な采配でした':'次回に期待します';
     document.getElementById('res-gain-text').innerText = `+${gain} EXP`;
     
-    // バーのアニメーション用計算
-    const nextExp = getNextExp();
-    const pct = (playerData.exp / nextExp) * 100;
-    
+    const nextExp = getNextExp(); const pct = (playerData.exp / nextExp) * 100;
     document.getElementById('res-exp-val').innerText = `${playerData.exp} / ${nextExp}`;
     document.getElementById('res-exp-bar').style.width = `${pct}%`;
 
     const sc = document.getElementById('result-screen');
     sc.style.display='flex'; setTimeout(()=>sc.style.opacity='1',10);
-
-    if(isLvlUp) {
-        const lvlTxt = document.getElementById('levelup-text');
-        lvlTxt.style.animation = 'levelup-anim 2s forwards';
-    }
+    if(isLvlUp) document.getElementById('levelup-text').style.animation='levelup-anim 2s forwards';
 }
 
 function showHistory(){document.getElementById('history-modal').style.display='flex'; updateHistoryModal();}
