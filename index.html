@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>忍術性質変化バトル Ver.57</title>
+<title>忍術性質変化バトル Ver.58</title>
 <link href="https://fonts.googleapis.com/css2?family=Reggae+One&display=swap" rel="stylesheet">
 <style>
     :root { --p1-color: #ff4500; --p2-color: #00bfff; --gold: #ffd700; --silver: #c0c0c0; --dark-bg: #050505; }
@@ -27,44 +27,38 @@
     #title-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
     .main-logo { font-size: 3.5rem; color: var(--gold); text-shadow: 0 0 10px #ff8c00; margin-bottom: 10px; animation: logo-breath 3s infinite; }
     @keyframes logo-breath { 0%,100%{transform:scale(1); text-shadow:0 0 10px #ff8c00;} 50%{transform:scale(1.05); text-shadow:0 0 25px var(--gold);} }
-    #player-status-box { width: 80%; max-width: 300px; border-top: 1px solid var(--gold); border-bottom: 1px solid var(--gold); margin-bottom: 30px; text-align: center; padding: 10px; background: rgba(0,0,0,0.5); cursor: pointer; transition: 0.2s; }
-    #player-status-box:active { transform: scale(0.95); background: rgba(255,215,0,0.1); }
+    #player-status-box { width: 85%; max-width: 350px; border-top: 1px solid var(--gold); border-bottom: 1px solid var(--gold); margin-bottom: 30px; text-align: center; padding: 15px; background: rgba(0,0,0,0.5); cursor: pointer; }
     .status-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px; }
-    #level-val { font-size: 1.5rem; color: #fff; }
-    #rank-val { font-size: 1.2rem; color: var(--gold); }
-    .exp-bar-container { width: 100%; height: 8px; background: #333; border-radius: 4px; overflow: hidden; position: relative; }
+    .exp-bar-container { width: 100%; height: 10px; background: #333; border-radius: 5px; overflow: hidden; position: relative; }
     .exp-bar-fill { height: 100%; background: linear-gradient(90deg, #ff8c00, var(--gold)); width: 0%; transition: width 1s ease-out; }
-    .exp-text { font-size: 0.7rem; color: #aaa; text-align: right; margin-top: 2px; }
-    .main-btn { width: 260px; padding: 18px; font-size: 1.4rem; color: #000; background: var(--gold); border: none; border-radius: 50px; cursor: pointer; font-family: 'Reggae One'; margin-bottom: 20px; box-shadow: 0 0 20px rgba(255,215,0,0.5); }
-    .sub-btn { width: 200px; padding: 10px; font-size: 1rem; color: #ddd; background: rgba(255,255,255,0.1); border: 1px solid #666; border-radius: 30px; cursor: pointer; font-family: 'Reggae One'; margin-bottom: 10px; }
+    .exp-text { font-size: 0.8rem; color: #aaa; text-align: right; margin-top: 2px; }
+
+    /* ボタン大型化 */
+    .main-btn { width: 280px; padding: 20px; font-size: 1.5rem; color: #000; background: var(--gold); border: none; border-radius: 50px; cursor: pointer; font-family: 'Reggae One'; margin-bottom: 25px; box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+    .sub-btn { width: 220px; padding: 12px; font-size: 1.1rem; color: #ddd; background: rgba(255,255,255,0.1); border: 1px solid #666; border-radius: 30px; cursor: pointer; font-family: 'Reggae One'; margin-bottom: 15px; }
 
     /* モード選択等 */
     #quest-select-modal, #briefing-modal, #settings-modal, #title-select-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3500; display: none; flex-direction: column; align-items: center; justify-content: center; }
     #quest-select-modal { padding-top: 40px; justify-content: flex-start; }
-    .quest-list { width: 95%; max-width: 450px; height: 60%; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; border: 1px solid #444; margin-bottom: 20px; border-radius: 5px; }
-    .quest-card { background: #222; border: 1px solid #444; border-radius: 8px; padding: 12px; display: flex; align-items: center; cursor: pointer; position: relative; }
+    .quest-list { width: 95%; max-width: 450px; height: 60%; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 10px; border: 1px solid #444; margin-bottom: 20px; border-radius: 5px; }
+    .quest-card { background: #222; border: 1px solid #444; border-radius: 8px; padding: 15px; display: flex; align-items: center; cursor: pointer; position: relative; }
     .quest-card.locked { opacity: 0.4; pointer-events: none; filter: grayscale(1); }
-    .quest-card:hover { border-color: var(--gold); background: #333; }
-    .quest-rank { font-size: 1.2rem; font-weight: bold; width: 40px; margin-right: 10px; }
-    .quest-info { flex: 1; text-align: left; }
-    .quest-badge { position: absolute; right: 10px; color: #4caf50; font-size: 0.8rem; border: 1px solid #444; padding: 2px 5px; display: none; }
-    .quest-card.cleared .quest-badge { display: block; }
+    .quest-rank { font-size: 1.3rem; font-weight: bold; width: 45px; margin-right: 10px; }
     .title-list { width: 90%; max-width: 300px; height: 50%; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; margin-bottom: 20px; }
-    .title-item { padding: 10px; background: #222; border: 1px solid #444; cursor: pointer; }
+    .title-item { padding: 15px; background: #222; border: 1px solid #444; cursor: pointer; }
     .title-item.selected { border-color: var(--gold); color: var(--gold); }
-    .title-item.locked { opacity: 0.5; pointer-events: none; }
 
     /* ゲーム画面 */
     .player-area { height: 35%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; }
     #p2-area { transform: rotate(180deg); }
-    .hand { display: flex; justify-content: center; gap: 5px; min-height: 110px; width: 100%; align-items: flex-end; perspective: 1000px; }
+    .hand { display: flex; justify-content: center; gap: 8px; min-height: 110px; width: 100%; align-items: flex-end; perspective: 1000px; }
     
-    /* カードデザイン */
-    .card { width: 68px; height: 98px; border-radius: 6px; background: #000; border: 2px solid #555; position: relative; transition: 0.2s; overflow: hidden; }
+    /* カード */
+    .card { width: 70px; height: 100px; border-radius: 6px; background: #000; border: 2px solid #555; position: relative; transition: 0.2s; overflow: hidden; }
     .card-inner { width: 100%; height: 100%; position: relative; z-index: 1; }
     .card img { width: 100%; height: 100%; object-fit: cover; opacity: 1; display: block; }
     .card-label { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.8); font-size: 10px; z-index: 5; padding: 2px 0; }
-    .card.selected { transform: translateY(-25px) scale(1.1); border-color: var(--gold); box-shadow: 0 0 15px var(--gold); z-index: 100; }
+    .card.selected { transform: translateY(-20px); border-color: var(--gold); box-shadow: 0 0 15px var(--gold); z-index: 100; }
     
     /* ホログラム */
     .card.rank-silver { border-color: #aaa; }
@@ -81,7 +75,10 @@
     .cutin-text { position: relative; font-size: 4rem; color: #fff; font-weight: 900; font-style: italic; text-shadow: 4px 4px 0 #000; white-space: nowrap; transform: skewX(-20deg); }
     @keyframes cutin-anim { 0% { opacity: 1; transform: scaleX(0); } 10% { transform: scaleX(1); } 80% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1) translateX(100px); opacity: 0; } }
 
-    .decide-btn { width: 140px; height: 45px; background: #a00; border: 2px solid #ffcc00; border-radius: 25px; font-size: 1.2rem; font-family: 'Reggae One'; color: #fff; z-index: 200; pointer-events: auto; }
+    /* 決定ボタン大型化 */
+    .decide-btn { width: 160px; height: 50px; background: #a00; border: 2px solid #ffcc00; border-radius: 25px; font-size: 1.3rem; font-family: 'Reggae One'; color: #fff; z-index: 200; pointer-events: auto; margin-bottom: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    .decide-btn:active { transform: scale(0.95); }
+
     #battle-center { z-index: 50; height: 30%; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
     #score-display { font-size: 2rem; text-shadow: 0 0 10px #000; }
 
@@ -89,38 +86,34 @@
     #result-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3200; display: none; flex-direction: column; align-items: center; justify-content: center; }
     #result-text { position: absolute; font-size: 5rem; text-shadow: 0 0 20px var(--gold); opacity: 0; z-index: 2500; }
     #res-exp-box { width: 80%; max-width: 300px; margin: 20px 0; background: #222; padding: 15px; border-radius: 10px; border: 1px solid #444; }
-    .res-exp-label { font-size: 0.9rem; color: #aaa; display: flex; justify-content: space-between; margin-bottom: 5px; }
     #levelup-text { position: absolute; top: 40%; width: 100%; text-align: center; font-size: 4rem; color: var(--gold); text-shadow: 0 0 20px red; opacity: 0; pointer-events: none; z-index: 3300; }
     @keyframes levelup-anim { 0%{transform:scale(0); opacity:0;} 20%{transform:scale(1.2); opacity:1;} 80%{transform:scale(1); opacity:1;} 100%{transform:scale(1.5); opacity:0;} }
 
     /* その他 */
-    .close-btn { width: 150px; padding: 10px; background: #333; color: #fff; border: 1px solid #fff; border-radius: 30px; cursor: pointer; font-family: 'Reggae One'; margin-top: 15px; }
+    .close-btn { width: 180px; padding: 15px; background: #333; color: #fff; border: 1px solid #fff; border-radius: 30px; cursor: pointer; font-family: 'Reggae One'; margin-top: 15px; font-size: 1.1rem; }
     .settings-header { font-size: 2rem; color: var(--gold); border-bottom: 2px solid var(--gold); margin-bottom: 20px; width: 80%; text-align: center; }
     .setting-options { display: flex; flex-wrap: wrap; gap: 8px; width:90%; }
-    .opt-btn { flex: 1; padding: 10px; background: #222; color: #888; border: 1px solid #444; border-radius: 5px; font-family: 'Reggae One'; }
+    .opt-btn { flex: 1; padding: 15px; background: #222; color: #888; border: 1px solid #444; border-radius: 5px; font-family: 'Reggae One'; }
     .opt-btn.active { background: rgba(255,215,0,0.2); color: var(--gold); border-color: var(--gold); }
 
-    /* アニメーション (ズームなし修正版) */
-    .anim-p1-enter { animation: p1-enter 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-    .anim-p2-enter { animation: p2-enter 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-    /* スケール拡大を削除し、位置移動のみにする */
+    /* アニメーション (シンプル移動・ズームなし) */
+    .anim-p1-enter { animation: p1-enter 1.0s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    .anim-p2-enter { animation: p2-enter 1.0s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    /* 拡大縮小を一切しない */
     @keyframes p1-enter { 0%{transform:translateY(100vh);} 60%{transform:translateY(50px);} 100%{transform:translateY(65px);} }
     @keyframes p2-enter { 0%{transform:translateY(-100vh) rotate(180deg);} 60%{transform:translateY(-50px) rotate(180deg);} 100%{transform:translateY(-65px) rotate(180deg);} }
     
     .anim-p1-win { animation: p1-win 0.4s forwards; } .anim-p2-win { animation: p2-win 0.4s forwards; }
-    /* 勝利時も大きくしすぎない */
-    @keyframes p1-win { from{transform:translateY(65px);} to{transform:translateY(-20px); z-index:2100;} }
-    @keyframes p2-win { from{transform:translateY(-65px) rotate(180deg);} to{transform:translateY(20px) rotate(180deg); z-index:2100;} }
+    @keyframes p1-win { from{transform:translateY(65px);} to{transform:translateY(0px); z-index:2100;} }
+    @keyframes p2-win { from{transform:translateY(-65px) rotate(180deg);} to{transform:translateY(0px) rotate(180deg); z-index:2100;} }
     
     .anim-repel-p1 { animation: repel-p1 0.5s forwards; } .anim-repel-p2 { animation: repel-p2 0.5s forwards; }
-    @keyframes repel-p1 { from{transform:translateY(65px);} to{transform:translateY(250px) rotate(-45deg); opacity:0;} }
-    @keyframes repel-p2 { from{transform:translateY(-65px) rotate(180deg);} to{transform:translateY(-250px) rotate(225deg); opacity:0;} }
+    @keyframes repel-p1 { from{transform:translateY(65px);} to{transform:translateY(200px) rotate(-10deg); opacity:0;} }
+    @keyframes repel-p2 { from{transform:translateY(-65px) rotate(180deg);} to{transform:translateY(-200px) rotate(190deg); opacity:0;} }
     
-    /* 敗北時もスケール操作を控える */
     .anim-lose-fire-p2 { animation: burn-p2 0.8s forwards; } .anim-lose-fire-p1 { animation: burn-p1 0.8s forwards; }
     @keyframes burn-p2 { 0%{transform:translateY(-65px) rotate(180deg); filter:sepia(1) saturate(5) hue-rotate(-50deg);} 100%{transform:translateY(-150px) rotate(180deg); opacity:0; filter:brightness(0);} }
     @keyframes burn-p1 { 0%{transform:translateY(65px); filter:sepia(1) saturate(5) hue-rotate(-50deg);} 100%{transform:translateY(150px); opacity:0; filter:brightness(0);} }
-    
     @keyframes text-pop { 0%{transform:scale(0); opacity:0;} 50%{transform:scale(1.2); opacity:1;} 100%{transform:scale(1); opacity:1;} }
 
 </style>
@@ -132,10 +125,11 @@
 <div id="title-screen">
     <div class="main-logo">忍術<br>性質変化</div>
     <div id="player-status-box" onclick="openTitleSelect()">
-        <div id="player-title">見習い忍者</div>
-        <div class="status-row"><div id="rank-val">アカデミー生</div><div id="level-val">Lv.1</div></div>
+        <div id="player-title" style="color:#aaa; font-size:0.9rem; margin-bottom:5px;">見習い忍者</div>
+        <div class="status-row"><div id="rank-val" style="font-size:1.5rem; color:var(--gold);">アカデミー生</div><div id="level-val" style="font-size:1.2rem;">Lv.1</div></div>
         <div class="exp-bar-container"><div class="exp-bar-fill" id="title-exp-bar"></div></div>
         <div class="exp-text" id="title-exp-text">0 / 100</div>
+        <div id="quest-progress" style="margin-top:5px; font-size:0.8rem; color:#888;">任務: 0/30</div>
     </div>
     <button class="main-btn" onclick="openQuestSelect()">任務開始</button>
     <button class="sub-btn" onclick="openPvPSetup()">対人演習</button>
@@ -185,7 +179,7 @@
         <div class="exp-bar-container"><div class="exp-bar-fill" id="res-exp-bar" style="width:0%"></div></div>
         <div class="exp-text" id="res-exp-val">0 / 100</div>
     </div>
-    <button class="main-btn" onclick="backToTitle()">タイトルへ</button>
+    <button class="main-btn" onclick="backToTitle()" style="margin-top:30px;">タイトルへ</button>
 </div>
 <div id="levelup-text">LEVEL UP!!</div>
 
@@ -259,15 +253,7 @@ let currentQuest = null, hands, scores, selected, confirmed, turn, gMode='N', pM
 window.onload = function() { loadData(); updateTitleUI(); applySettingsUI(); initParticles(); };
 function loadData() { 
     const d=localStorage.getItem('ninjaBattleData'); 
-    if(d){ 
-        const tmp=JSON.parse(d); 
-        playerData.clearedQuest = tmp.clearedQuest || 0;
-        playerData.effect = tmp.effect || 'none';
-        playerData.title = tmp.title || '見習い忍者';
-        playerData.wins = tmp.wins || 0;
-        playerData.level = tmp.level || 1;
-        playerData.exp = tmp.exp || 0;
-    } 
+    if(d){ const tmp=JSON.parse(d); playerData.clearedQuest=tmp.clearedQuest||0; playerData.effect=tmp.effect||'none'; playerData.title=tmp.title||'見習い忍者'; playerData.wins=tmp.wins||0; playerData.level=tmp.level||1; playerData.exp=tmp.exp||0; } 
 }
 function saveData() { localStorage.setItem('ninjaBattleData', JSON.stringify(playerData)); }
 function getNextExp() { return playerData.level * 100; }
@@ -281,6 +267,7 @@ function updateTitleUI() {
     const pct = (playerData.exp / getNextExp()) * 100;
     document.getElementById('title-exp-bar').style.width = `${pct}%`;
     document.getElementById('title-exp-text').innerText = `${playerData.exp} / ${getNextExp()}`;
+    document.getElementById('quest-progress').innerText = `任務: ${playerData.clearedQuest}/${QUESTS.length}`;
 }
 
 function openQuestSelect() { 
@@ -366,7 +353,7 @@ function startAnim(){
         const l=document.getElementById('anim-layer'); l.innerHTML='';
         const c1=mkClash(p1D,'#ff4500'), c2=mkClash(p2D,'#00bfff');
         c1.classList.add('anim-p1-enter'); c2.classList.add('anim-p2-enter'); l.appendChild(c1); l.appendChild(c2);
-        setTimeout(resolve,1200);
+        setTimeout(resolve,1000);
     }, 800);
 }
 function mkClash(cards,color){
@@ -378,23 +365,23 @@ function resolve(){
     const m1=p1D,m2=p2D, s1=m1.join("+"),s2=m2.join("+"); 
     let w=0; 
     if(m1.length>m2.length)w=1;else if(m2.length>m1.length)w=2;else if(m1.length===1&&rel[m1[0]]===m2[0])w=1;else if(m1.length===1&&rel[m2[0]]===m1[0])w=2;
+    
     const c1=document.querySelector('.anim-p1-enter'), c2=document.querySelector('.anim-p2-enter');
     if(c1){c1.style.animation='none';c1.offsetHeight;c1.style.transform='translateY(65px)';}
     if(c2){c2.style.animation='none';c2.offsetHeight;c2.style.transform='translateY(-65px) rotate(180deg)';}
-    const txt=document.getElementById('result-text'); let msg="";
-    let nextAct = null;
+    
+    const txt=document.getElementById('result-text'); let msg=""; let nextAct = null;
 
     if(w!==0){
-        scores[w]++; if(firstPt===null)firstPt=w; msg=w===1?"勝機!":"危機!"; txt.style.color=w===1?"#ff4500":"#00bfff";
+        scores[w]++; if(firstPt===null)firstPt=w; msg=w===1?"勝利":"敗北"; txt.style.color=w===1?"#ff4500":"#00bfff";
         if(w===1){c1.classList.add('anim-p1-win'); c2.classList.add('anim-lose-fire-p2');} 
         else{c2.classList.add('anim-p2-win'); c1.classList.add('anim-lose-fire-p1');}
         nextAct = () => consume(m1,m2);
     } else {
-        msg="相殺"; txt.style.color="#fff"; c1.classList.add('anim-repel-p1'); c2.classList.add('anim-repel-p2');
+        msg="あいこ"; txt.style.color="#fff"; c1.classList.add('anim-repel-p1'); c2.classList.add('anim-repel-p2');
         if (s1 === s2) { 
-            // 修正箇所: ノーマルのあいこは消費しない！
             if (gMode === 'N') {
-                if (turn === 3) { msg="相殺(終)"; nextAct = () => consume(m1,m2); }
+                if (turn === 3) { msg="引き分け"; nextAct = () => consume(m1,m2); }
                 else { msg="出し直し"; bannedStr = null; nextAct = () => resetTurn(); }
             } else { 
                 if (turn === 1) { bannedStr = s1; msg="封印!"; }
@@ -408,8 +395,7 @@ function resolve(){
     setTimeout(()=>{
         document.getElementById('anim-layer').innerHTML=''; txt.style.opacity='0'; txt.style.animation='none';
         document.getElementById('p1-hand').style.opacity='1'; document.getElementById('p2-hand').style.opacity='1'; document.getElementById('battle-center').style.opacity='1';
-        nextAct();
-        checkEnd();
+        nextAct(); checkEnd();
     },2000);
 }
 
